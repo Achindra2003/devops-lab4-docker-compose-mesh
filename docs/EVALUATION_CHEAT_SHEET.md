@@ -6,7 +6,7 @@
 **Application:** MeshPulse — Cloud-Native Multi-Container Orchestration, Zero-Trust Networking & Storage Architecture  
 **GitHub Repository:** [https://github.com/Achindra2003/devops-lab4-docker-compose-mesh](https://github.com/Achindra2003/devops-lab4-docker-compose-mesh)  
 **Live Ingress URL:** `http://localhost:8080`  
-**Full Report:** [LAB_4_REPORT.md](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.md)  
+**Full Report:** [LAB_4_REPORT.md](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.md) | [2547105_Lab4.pdf](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/2547105_Lab4.pdf)  
 
 ---
 

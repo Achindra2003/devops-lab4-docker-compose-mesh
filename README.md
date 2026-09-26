@@ -44,6 +44,7 @@ docker compose down
 
 ## Deliverables & Documentation
 
+- [Official PDF Lab Report (2547105_Lab4.pdf)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/2547105_Lab4.pdf)
 - [Full Academic Lab Report (Markdown)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.md)
 - [Printable Academic Lab Report (HTML)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.html)
 - [Self-Learning Initiatives (7 Pillars)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/SELF_LEARNING.md)
