@@ -1,0 +1,32 @@
+# =========================================================================
+# UNOPTIMIZED BASELINE DOCKER COMPOSE CONFIGURATION (ANTI-PATTERN CONTRAST)
+# MCA Trimester 5 - DevOps Lab 4
+# Demonstrating Naive Architecture Flaws:
+# 1. Single Flat Network (No segmentation: Redis exposed directly)
+# 2. Ephemeral Storage (No named volumes: 100% data loss on down)
+# 3. No Healthchecks or Dependency Ordering (Race conditions on boot)
+# 4. No Resource Limits (Vulnerable to Noisy Neighbor exhaustion)
+# =========================================================================
+
+services:
+  gateway:
+    image: nginx:latest
+    container_name: naive-gateway
+    ports:
+      - "8081:80"
+
+  api:
+    image: node:22
+    container_name: naive-api
+    working_dir: /app
+    volumes:
+      - .:/app
+    command: ["node", "server.js"]
+    environment:
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+
+  cache:
+    image: redis:latest
+    container_name: naive-cache
+    # No named volume mounted! Data stored in container layer vanishes on restart.

@@ -1,0 +1,171 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Lab 4 Report — MeshPulse Multi-Container Orchestration, Networking &amp; Storage</title>
+<style>
+  @page { size: A4; margin: 22mm 20mm 22mm 20mm; }
+  * { box-sizing: border-box; }
+  body {
+    font-family: "Times New Roman", Times, Georgia, serif;
+    font-size: 12pt;
+    line-height: 1.38;
+    color: #111;
+    margin: 0;
+  }
+  p { margin: 0 0 10pt 0; text-align: justify; }
+  .title-block { text-align: center; margin-bottom: 22pt; }
+  .title-block h1 { font-size: 20pt; margin: 0 0 6pt 0; font-weight: bold; }
+  .title-block .subtitle { font-size: 13.5pt; font-weight: bold; margin: 0 0 14pt 0; }
+  .title-block .meta-line { font-size: 12pt; margin: 2pt 0; }
+  .title-block .meta-line a { color: #111; text-decoration: underline; }
+  .title-block .class-line { font-size: 12pt; margin-top: 8pt; }
+  hr.divider { border: none; border-top: 1px solid #999; margin: 16pt 0; }
+  h2.section { font-size: 13.5pt; font-weight: bold; margin: 20pt 0 8pt 0; break-after: avoid; }
+  h3.subsection { font-size: 12pt; font-weight: bold; margin: 12pt 0 6pt 0; break-after: avoid; }
+  ul, ol { margin: 6pt 0 12pt 0; padding-left: 22pt; }
+  li { text-align: justify; margin-bottom: 5pt; }
+  figure { margin: 14pt 0; text-align: center; break-inside: avoid; }
+  figure img { max-width: 100%; border: 1px solid #bbb; border-radius: 2px; }
+  figcaption { font-style: italic; font-size: 10.5pt; margin-top: 6pt; color: #222; text-align: center; }
+  pre.code {
+    background: #f6f6f4; border: 1px solid #ddd; border-radius: 2px;
+    font-family: Consolas, "Courier New", monospace; font-size: 9.5pt;
+    line-height: 1.35; padding: 9pt 11pt; margin: 8pt 0 12pt 0;
+    white-space: pre-wrap; word-wrap: break-word; text-align: left;
+    break-inside: avoid;
+  }
+  table { width: 100%; border-collapse: collapse; margin: 10pt 0 14pt 0; font-size: 10.5pt; break-inside: avoid; }
+  th, td { border: 1px solid #999; padding: 5pt 7pt; text-align: left; vertical-align: top; }
+  th { background: #eeeeee; font-weight: bold; text-align: center; }
+  strong { font-weight: bold; }
+  code.inline { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; }
+</style>
+</head>
+<body>
+
+<div class="title-block">
+  <h1>Lab Report</h1>
+  <div class="subtitle">Multi-Container Application Orchestration, Network Segmentation &amp; Storage Validation<br>MeshPulse — Cloud-Native Distributed Microservice Architecture</div>
+  <div class="meta-line">Achindra Sharma — 2547105 (Individual Submission)</div>
+  <div class="meta-line class-line">4MCA A — MCA Trimester 5: DevOps Lab (Lab 4)</div>
+  <div class="meta-line" style="margin-top:8pt;">Repository: <a href="https://github.com/Achindra2003/devops-lab4-docker-compose-mesh">github.com/Achindra2003/devops-lab4-docker-compose-mesh</a></div>
+  <div class="meta-line">Compose Launch: <code class="inline" style="background:#f0f0f0;padding:2px 5px;border-radius:3px;">docker compose up -d</code></div>
+  <div class="meta-line">Ingress Gateway: <code class="inline" style="background:#f0f0f0;padding:2px 5px;border-radius:3px;">http://localhost:8080</code></div>
+</div>
+
+<h2 class="section">1. Project Description &amp; Problem Context</h2>
+<p>Modern cloud-native platforms rely on multi-container orchestration where independent services coordinate across network and storage boundaries. The prompt for this laboratory is to <strong>develop and deploy a multi-container application using Docker Compose or Podman, and validate networking and storage</strong>.</p>
+<p>To eliminate naive anti-patterns (such as flat unsegmented bridge networks and ephemeral database storage), we engineered <strong>MeshPulse</strong>: a four-tier distributed microservice stack comprising an Nginx edge gateway, a multi-stage Node.js core API, an append-only Redis cache, and an automated network sentinel.</p>
+
+<figure>
+  <img src="screenshots/10-meshpulse-live-dashboard.png" alt="MeshPulse Live Browser Dashboard">
+  <figcaption>Figure 1 — MeshPulse interactive web portal accessed via Nginx edge gateway on port 8080, displaying live network topology and storage state.</figcaption>
+</figure>
+
+<h2 class="section">2. Multi-Container Orchestration Architecture</h2>
+<p>Our stack is defined in <code class="inline">docker-compose.yml</code> using healthcheck-driven dependency ordering (<code class="inline">condition: service_healthy</code>) to prevent boot-time race conditions between the application and database tiers:</p>
+
+<figure>
+  <img src="screenshots/01-docker-compose-build.png" alt="Compiling Multi-Container Stack">
+  <figcaption>Figure 2 — Docker Compose compiling the custom multi-stage API microservice image.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/02-docker-compose-up.png" alt="Orchestrated Deployment with Healthchecks">
+  <figcaption>Figure 3 — Ordered container convergence: Redis Cache healthy -> Core API healthy -> Edge Gateway & Watchdog active.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/03-docker-compose-ps.png" alt="Docker Compose Process Table">
+  <figcaption>Figure 4 — Active microservice process table verifying 4/4 healthy containers with published ports and bound networks.</figcaption>
+</figure>
+
+<h2 class="section">3. Network Segmentation &amp; Zero-Trust Validation</h2>
+<p>We designed dual isolated bridge networks to enforce least-privilege traffic flow:</p>
+<ul>
+  <li><strong class="lead">frontend-net (172.28.1.0/24)</strong>: Connects Edge Gateway and Core API for public HTTP ingress.</li>
+  <li><strong class="lead">backend-net (172.28.2.0/24)</strong>: Connects Core API, Redis Cache, and Sentinel Watchdog for private data operations.</li>
+</ul>
+
+<figure>
+  <img src="screenshots/04-network-inspection.png" alt="Network Subnet Inspection">
+  <figcaption>Figure 5 — Inspecting custom bridge network driver configurations and allocated IP subnets.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/05-dns-service-discovery.png" alt="DNS Service Discovery">
+  <figcaption>Figure 6 — Verification of Docker embedded DNS (127.0.0.11) resolving container service names across networks.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/06-network-isolation-test.png" alt="Zero-Trust Isolation Verification">
+  <figcaption>Figure 7 — Verification of Zero-Trust Network Isolation: connection and ping from Edge Gateway to Redis Cache are blocked.</figcaption>
+</figure>
+
+<h2 class="section">4. Storage Tier Validation &amp; Data Durability</h2>
+<p>We implemented a Tri-Tier storage hierarchy validating persistence and security boundaries:</p>
+<table>
+  <thead>
+    <tr>
+      <th>Storage Tier</th>
+      <th>Mount Type</th>
+      <th>Target Path</th>
+      <th>Operational Role</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><strong>Tier 1</strong></td>
+      <td>Named Persistent Volume</td>
+      <td><code class="inline">redis_data:/data</code></td>
+      <td>Append-Only File (AOF) durable storage surviving container destruction.</td>
+    </tr>
+    <tr>
+      <td><strong>Tier 2</strong></td>
+      <td>Read-Only Bind Mount</td>
+      <td><code class="inline">./nginx/nginx.conf:ro</code></td>
+      <td>Host configuration injection with write-protection against tampering.</td>
+    </tr>
+    <tr>
+      <td><strong>Tier 3</strong></td>
+      <td>In-Memory Tmpfs Mount</td>
+      <td><code class="inline">/tmp (64MB)</code></td>
+      <td>High-speed RAM-backed ephemeral storage with zero physical disk I/O.</td>
+    </tr>
+  </tbody>
+</table>
+
+<figure>
+  <img src="screenshots/07-storage-volume-inspect.png" alt="Storage Inspection">
+  <figcaption>Figure 8 — Inspecting named volume metadata and verifying write-protection on read-only bind mounts.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/08-storage-durability-recovery.png" alt="Volume Durability Proof">
+  <figcaption>Figure 9 — Proving 100% data durability: Redis container destroyed and recreated with zero data loss via named volume.</figcaption>
+</figure>
+
+<figure>
+  <img src="screenshots/09-automated-validation-suite.png" alt="Automated Validation Suite">
+  <figcaption>Figure 10 — Terminal execution of automated network and storage validation suites reporting 10/10 passing checks.</figcaption>
+</figure>
+
+<h2 class="section">5. The Seven Self-Learning Initiatives</h2>
+<ol>
+  <li><strong>Multi-Tier Zero-Trust Network Segmentation:</strong> Dual bridge networks preventing direct database exposure from edge ingress.</li>
+  <li><strong>Tri-Tier Storage Strategy:</strong> Orchestrating Named Volumes, Read-Only Bind Mounts, and Tmpfs RAM mounts simultaneously.</li>
+  <li><strong>Automated Disaster Recovery Testing:</strong> Scripted verification proving zero data loss across container lifecycle destruction.</li>
+  <li><strong>DNS Service Discovery Architecture:</strong> Fully automated service discovery via Docker embedded DNS without hardcoded IPs.</li>
+  <li><strong>Healthcheck-Driven Dependency Orchestration:</strong> Eliminating race conditions using <code class="inline">condition: service_healthy</code>.</li>
+  <li><strong>Least-Privilege Non-Root Hardening:</strong> Microservice execution as UID 1000 with <code class="inline">no-new-privileges:true</code>.</li>
+  <li><strong>Automated CI/CD Validation Pipeline:</strong> GitHub Actions pipeline verifying unit tests, compose startup, network isolation, and storage recovery.</li>
+</ol>
+
+<h2 class="section">6. Key Learnings &amp; Engineering Reflections</h2>
+<p>1. <strong>Network Segmentation is Essential:</strong> Single flat bridge networks expose internal databases to edge breaches. Dual-homed bridge networks provide defense-in-depth.</p>
+<p>2. <strong>Storage Must Match Lifecycle:</strong> State belongs in named persistent volumes with AOF; configs belong in read-only bind mounts; ephemeral tokens belong in tmpfs RAM.</p>
+<p>3. <strong>Dependency Ordering Requires Probes:</strong> Standard Compose <code class="inline">depends_on</code> is insufficient because it only checks container creation, not runtime readiness.</p>
+
+</body>
+</html>

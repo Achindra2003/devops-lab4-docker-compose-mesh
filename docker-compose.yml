@@ -1,0 +1,169 @@
+# =========================================================================
+# PRODUCTION MULTI-CONTAINER DOCKER COMPOSE CONFIGURATION
+# Application: MeshPulse — Cloud-Native Network & Storage Orchestration
+# Course: MCA Trimester 5 — DevOps Lab 4
+# Student: Achindra Sharma (2547105) — 4MCA A
+# =========================================================================
+
+services:
+  # -----------------------------------------------------------------------
+  # Service 1: Edge Gateway / Reverse Proxy (Ingress Tier)
+  # Network: frontend-net ONLY (Strict zero-trust segmentation)
+  # Storage: Read-Only Bind Mount (./nginx/nginx.conf)
+  # -----------------------------------------------------------------------
+  gateway:
+    image: nginx:1.27-alpine
+    container_name: mesh-gateway
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Storage Tier 1: Read-Only Bind Mount (:ro ensures configuration immutability)
+      - ./nginx/nginx.conf:/etc/nginx/nginx.conf:ro
+    networks:
+      - frontend-net
+    depends_on:
+      api:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -q --spider http://127.0.0.1:80/gateway/healthz || exit 1"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 128M
+
+  # -----------------------------------------------------------------------
+  # Service 2: Core Microservice API (Routing & Business Tier)
+  # Networks: frontend-net AND backend-net (The secure multi-homed bridge)
+  # Storage: In-Memory Tmpfs Mount (/tmp)
+  # -----------------------------------------------------------------------
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: meshpulse-api:1.0.0
+    container_name: mesh-api
+    restart: unless-stopped
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+      - REDIS_HOST=cache
+      - REDIS_PORT=6379
+    # Storage Tier 2: Tmpfs RAM Mount (High-performance ephemeral storage, zero disk writes)
+    tmpfs:
+      - /tmp:size=64M,mode=1777
+    networks:
+      - frontend-net
+      - backend-net
+    depends_on:
+      cache:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://127.0.0.1:3000/healthz"]
+      interval: 15s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # -----------------------------------------------------------------------
+  # Service 3: Persistent State & Cache Store (Data Tier)
+  # Network: backend-net ONLY (Completely isolated from gateway & internet)
+  # Storage: Named Persistent Volume (redis_data:/data with AOF persistence)
+  # -----------------------------------------------------------------------
+  cache:
+    image: redis:7.4-alpine
+    container_name: mesh-cache
+    restart: unless-stopped
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      # Storage Tier 3: Named Persistent Volume (Survives container removal)
+      - redis_data:/data
+    networks:
+      - backend-net
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 3
+      start_period: 5s
+    security_opt:
+      - no-new-privileges:true
+    deploy:
+      resources:
+        limits:
+          cpus: '0.5'
+          memory: 256M
+
+  # -----------------------------------------------------------------------
+  # Service 4: Internal Network & Storage Telemetry Sentinel (Worker Tier)
+  # Network: backend-net ONLY
+  # Purpose: Autonomous DNS discovery & health polling sentinel
+  # -----------------------------------------------------------------------
+  watchdog:
+    image: alpine:3.21
+    container_name: mesh-watchdog
+    restart: unless-stopped
+    command: >
+      sh -c "while true; do
+        echo \"[$(date -Iseconds)] [Watchdog Sentinel] Probing backend network topology...\";
+        nc -z -w 2 cache 6379 && echo \"  ✔ [DNS Check] Redis Cache reachable at cache:6379\" || echo \"  ✖ Cache unreachable\";
+        nc -z -w 2 api 3000 && echo \"  ✔ [DNS Check] API Microservice reachable at api:3000\" || echo \"  ✖ API unreachable\";
+        sleep 15;
+      done"
+    networks:
+      - backend-net
+    depends_on:
+      api:
+        condition: service_healthy
+    deploy:
+      resources:
+        limits:
+          cpus: '0.2'
+          memory: 64M
+
+# =========================================================================
+# NETWORKING ARCHITECTURE (Multi-Tier Zero-Trust Segmentation)
+# =========================================================================
+networks:
+  # Ingress network: connects Edge Gateway to Core API only
+  frontend-net:
+    name: meshpulse-frontend-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.1.0/24
+
+  # Isolated private network: connects Core API to Cache and Watchdog
+  backend-net:
+    name: meshpulse-backend-net
+    driver: bridge
+    ipam:
+      driver: default
+      config:
+        - subnet: 172.28.2.0/24
+
+# =========================================================================
+# STORAGE ARCHITECTURE (Named Persistent Volumes)
+# =========================================================================
+volumes:
+  redis_data:
+    name: meshpulse_redis_data
+    driver: local
+    labels:
+      lab: "DevOps Lab 4"
+      purpose: "MeshPulse Persistent Append-Only State Storage"
+      author: "Achindra Sharma <2547105>"

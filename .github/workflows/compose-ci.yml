@@ -1,0 +1,72 @@
+name: MeshPulse Docker Compose CI & Multi-Tier Validation
+
+on:
+  push:
+    branches:
+      - main
+      - develop
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  # -------------------------------------------------------------
+  # Job 1: Unit Testing Microservice Logic
+  # -------------------------------------------------------------
+  unit-tests:
+    name: Microservice Unit Tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Run Automated Microservice Unit Tests
+        run: npm test
+
+  # -------------------------------------------------------------
+  # Job 2: Compose Orchestration, Network & Storage Validation
+  # -------------------------------------------------------------
+  compose-orchestration:
+    name: Compose Deployment, Networking & Storage Audit
+    needs: unit-tests
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout Source Code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 22
+
+      - name: Build & Deploy Multi-Container Mesh
+        run: |
+          echo "🐳 Launching MeshPulse with Docker Compose..."
+          docker compose up -d --build
+
+      - name: Wait for Service Healthchecks
+        run: |
+          echo "⏳ Waiting for healthchecks to report healthy..."
+          sleep 12
+          docker compose ps
+
+      - name: Validate Multi-Tier Networking & Zero-Trust Isolation
+        run: |
+          echo "🌐 Executing automated networking validation suite..."
+          node scripts/validate-networking.js
+
+      - name: Validate Tri-Tier Storage & Crash Recovery Durability
+        run: |
+          echo "💾 Executing automated storage validation suite..."
+          node scripts/validate-storage.js
+
+      - name: Teardown Compose Environment
+        if: always()
+        run: |
+          echo "🛑 Tearing down Docker Compose containers..."
+          docker compose down -v

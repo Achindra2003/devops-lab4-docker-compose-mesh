@@ -1,0 +1,31 @@
+{
+  "name": "devops-lab4-docker-compose-mesh",
+  "version": "1.0.0",
+  "description": "MeshPulse — Multi-Container Application with Network Segmentation & Multi-Tier Storage Validation using Docker Compose",
+  "main": "server.js",
+  "type": "module",
+  "scripts": {
+    "start": "node server.js",
+    "test": "node --test tests/mesh.test.js",
+    "validate:network": "node scripts/validate-networking.js",
+    "validate:storage": "node scripts/validate-storage.js",
+    "compose:up": "docker compose up -d --build",
+    "compose:down": "docker compose down",
+    "compose:down:volumes": "docker compose down -v",
+    "compose:ps": "docker compose ps",
+    "compose:logs": "docker compose logs -f",
+    "generate:screenshots": "python scripts/generate-screenshots.py"
+  },
+  "keywords": [
+    "devops",
+    "docker-compose",
+    "networking",
+    "storage",
+    "volumes",
+    "microservices",
+    "redis",
+    "nginx"
+  ],
+  "author": "Achindra Sharma <2547105>",
+  "license": "MIT"
+}

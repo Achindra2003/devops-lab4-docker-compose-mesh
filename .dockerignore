@@ -1,0 +1,13 @@
+node_modules
+npm-debug.log
+.git
+.gitignore
+.githooks
+.github
+docs
+*.md
+tests
+scripts/*.py
+.env*
+Dockerfile*
+docker-compose*.yml

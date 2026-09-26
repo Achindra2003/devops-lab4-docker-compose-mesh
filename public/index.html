@@ -1,0 +1,340 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MeshPulse — Multi-Container Orchestration, Network & Storage Validation</title>
+  <link rel="stylesheet" href="style.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Fira+Code:wght@400;600&family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+</head>
+<body>
+  <div class="app-container">
+    <!-- Navbar -->
+    <header class="navbar">
+      <div class="brand">
+        <div class="logo-icon">🌐</div>
+        <div class="brand-text">
+          <span class="brand-title">MeshPulse</span>
+          <span class="brand-sub">Multi-Container Composition, Network Segmentation &amp; Storage Architecture</span>
+        </div>
+      </div>
+      <div class="nav-pills">
+        <span class="pill pill-compose"><span class="pill-dot"></span> Docker Compose v2</span>
+        <span class="pill pill-user">USER: <strong>node (UID 1000)</strong></span>
+        <span class="pill pill-network">2 Networks Isolated</span>
+        <span class="pill pill-storage">3 Storage Tiers</span>
+      </div>
+    </header>
+
+    <!-- Student Attribution Banner -->
+    <section class="student-strip">
+      <div class="student-info">
+        <span>👤 <strong>Student:</strong> Achindra Sharma (2547105)</span>
+        <span>🏫 <strong>Class:</strong> 4MCA A</span>
+        <span>⚙️ <strong>Course:</strong> MCA Trimester 5 — DevOps Lab 4</span>
+      </div>
+      <div class="runtime-meta">
+        <span>🐳 <strong>Stack:</strong> Nginx Gateway + Node.js API + Redis Cache + Sentinel Watchdog</span>
+      </div>
+    </section>
+
+    <!-- Top Telemetry Grid -->
+    <section class="metrics-grid">
+      <div class="metric-card">
+        <div class="metric-label">Active Microservices</div>
+        <div class="metric-value text-success" id="valServicesCount">4 / 4 Healthy</div>
+        <div class="metric-hint">gateway • api • cache • watchdog</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Network Segmentation</div>
+        <div class="metric-value text-accent" id="valNetworkSeg">Zero-Trust</div>
+        <div class="metric-hint">frontend-net (172.28.1.0) &amp; backend-net (172.28.2.0)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Persistent Storage Tier</div>
+        <div class="metric-value text-success" id="valStorageStatus">Named Volume</div>
+        <div class="metric-hint">redis_data (AOF Persistence on /data)</div>
+      </div>
+      <div class="metric-card">
+        <div class="metric-label">Ephemeral Security Mount</div>
+        <div class="metric-value text-purple" id="valTmpfsStatus">Tmpfs (64MB)</div>
+        <div class="metric-hint">Zero-Disk-IO in-memory /tmp</div>
+      </div>
+    </section>
+
+    <!-- Multi-Container Visual Topology Diagram -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Distributed Multi-Container Topology</h2>
+          <p class="panel-subtitle">Demonstrating ingress routing, secure network isolation, and storage mount boundaries</p>
+        </div>
+        <span class="badge-saving">Docker Compose Orchestrated</span>
+      </div>
+
+      <div class="topology-container">
+        <!-- Gateway Card -->
+        <div class="service-box box-gateway">
+          <div class="box-badge">INGRESS PROXY</div>
+          <div class="box-icon">🛡️</div>
+          <div class="box-title">gateway</div>
+          <div class="box-image">nginx:1.27-alpine</div>
+          <div class="box-detail">Port: <strong>8080 ➔ 80</strong></div>
+          <div class="box-detail">Network: <span class="tag-front">frontend-net</span></div>
+          <div class="box-storage">Storage: <code>nginx.conf:ro</code> (Bind Mount)</div>
+        </div>
+
+        <div class="topology-arrow">
+          <span>HTTP Proxy</span>
+          ➔
+        </div>
+
+        <!-- API Card -->
+        <div class="service-box box-api">
+          <div class="box-badge badge-accent">CORE BRIDGE</div>
+          <div class="box-icon">⚡</div>
+          <div class="box-title">api</div>
+          <div class="box-image">meshpulse-api:1.0.0</div>
+          <div class="box-detail">Port: <strong>3000 (Internal)</strong></div>
+          <div class="box-detail">Networks: <span class="tag-front">frontend</span> &amp; <span class="tag-back">backend</span></div>
+          <div class="box-storage">Storage: <code>/tmp</code> (Tmpfs RAM Mount)</div>
+        </div>
+
+        <div class="topology-arrow">
+          <span>TCP RESP</span>
+          ➔
+        </div>
+
+        <!-- Cache Card -->
+        <div class="service-box box-cache">
+          <div class="box-badge badge-success">DATA TIER</div>
+          <div class="box-icon">💾</div>
+          <div class="box-title">cache</div>
+          <div class="box-image">redis:7.4-alpine</div>
+          <div class="box-detail">Port: <strong>6379 (Isolated)</strong></div>
+          <div class="box-detail">Network: <span class="tag-back">backend-net</span></div>
+          <div class="box-storage">Storage: <code>redis_data</code> (Named Volume)</div>
+        </div>
+
+        <div class="topology-separator">+</div>
+
+        <!-- Watchdog Card -->
+        <div class="service-box box-watchdog">
+          <div class="box-badge badge-muted">SENTINEL</div>
+          <div class="box-icon">🛰️</div>
+          <div class="box-title">watchdog</div>
+          <div class="box-image">alpine:3.21</div>
+          <div class="box-detail">Role: Health Sentinel</div>
+          <div class="box-detail">Network: <span class="tag-back">backend-net</span></div>
+          <div class="box-storage">DNS Discovery Watcher</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Dual Column: Network Validation & Storage Validation -->
+    <div class="dual-columns">
+      <!-- Left Column: Networking Validation -->
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Network Validation &amp; DNS Discovery</h3>
+            <span class="panel-subtitle">Probing Docker embedded DNS (127.0.0.11) &amp; cross-tier isolation</span>
+          </div>
+          <button id="btnRunDnsTest" class="btn btn-accent btn-sm">Run DNS Probe</button>
+        </div>
+
+        <div class="test-controls-desc">
+          Evaluates service reachability across custom bridge networks:
+        </div>
+
+        <div class="table-wrapper">
+          <table class="data-table">
+            <thead>
+              <tr>
+                <th>Service Target</th>
+                <th>Target Network</th>
+                <th>Resolved IP</th>
+                <th>Latency</th>
+                <th>Isolation Status</th>
+              </tr>
+            </thead>
+            <tbody id="dnsTableBody">
+              <tr>
+                <td><code>cache</code></td>
+                <td><span class="tag-back">backend-net</span></td>
+                <td><code>172.28.2.2</code></td>
+                <td>&lt;1 ms</td>
+                <td><span class="status-pass">REACHABLE ✔</span></td>
+              </tr>
+              <tr>
+                <td><code>gateway</code></td>
+                <td><span class="tag-front">frontend-net</span></td>
+                <td><code>172.28.1.2</code></td>
+                <td>&lt;1 ms</td>
+                <td><span class="status-pass">REACHABLE ✔</span></td>
+              </tr>
+              <tr>
+                <td><code>watchdog</code></td>
+                <td><span class="tag-back">backend-net</span></td>
+                <td><code>172.28.2.4</code></td>
+                <td>&lt;1 ms</td>
+                <td><span class="status-pass">REACHABLE ✔</span></td>
+              </tr>
+              <tr>
+                <td><code>gateway ➔ cache</code></td>
+                <td>Cross-Boundary</td>
+                <td>Blocked (No Route)</td>
+                <td>—</td>
+                <td><span class="status-isolated">ISOLATED (Zero-Trust) ✔</span></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="network-legend">
+          <div class="legend-item"><span class="dot-front"></span> <strong>frontend-net:</strong> Public-facing (172.28.1.0/24). Connects Gateway &amp; API.</div>
+          <div class="legend-item"><span class="dot-back"></span> <strong>backend-net:</strong> Private (172.28.2.0/24). Connects API, Cache &amp; Sentinel. Gateway is completely excluded!</div>
+        </div>
+      </section>
+
+      <!-- Right Column: Storage Validation & Persistence -->
+      <section class="panel">
+        <div class="panel-header">
+          <div>
+            <h3>Storage Tier Validation &amp; Persistence</h3>
+            <span class="panel-subtitle">Testing Named Volume recovery, Read-Only Bind Mounts &amp; Tmpfs</span>
+          </div>
+          <div class="btn-group">
+            <button id="btnWriteStorage" class="btn btn-primary btn-sm">Write Record</button>
+            <button id="btnReadStorage" class="btn btn-sm">Read Records</button>
+            <button id="btnTmpfsTest" class="btn btn-purple btn-sm">Test Tmpfs</button>
+          </div>
+        </div>
+
+        <div class="storage-cards-grid">
+          <!-- Named Volume Card -->
+          <div class="storage-card">
+            <div class="storage-badge badge-success">PERSISTENT VOLUME</div>
+            <div class="storage-name">redis_data (Named Volume)</div>
+            <div class="storage-mount">Target: <code>/data</code> inside <code>mesh-cache</code></div>
+            <div class="storage-desc">Append-Only File (AOF) ensures zero data loss even if container is destroyed via <code>docker compose down</code>.</div>
+            <div class="storage-records-count">Records in Volume: <strong id="lblRecordCount">0</strong></div>
+          </div>
+
+          <!-- Bind Mount Card -->
+          <div class="storage-card">
+            <div class="storage-badge badge-accent">READ-ONLY BIND MOUNT</div>
+            <div class="storage-name">./nginx/nginx.conf</div>
+            <div class="storage-mount">Mount: <code>/etc/nginx/nginx.conf:ro</code></div>
+            <div class="storage-desc">Injects immutable gateway configuration from host without baking files into image layers. <code>:ro</code> prevents tampering.</div>
+          </div>
+
+          <!-- Tmpfs Card -->
+          <div class="storage-card">
+            <div class="storage-badge badge-purple">IN-MEMORY TMPFS</div>
+            <div class="storage-name">tmpfs: /tmp (64MB)</div>
+            <div class="storage-mount">Mount: <code>/tmp</code> inside <code>mesh-api</code></div>
+            <div class="storage-desc">High-speed RAM-backed storage for ephemeral security tokens. Never touches physical disk.</div>
+          </div>
+        </div>
+
+        <!-- Live Storage State Log -->
+        <div class="storage-log-box" id="storageLogBox">
+          <div class="log-entry text-muted">[System] Ready to validate storage tiers. Click "Write Record" to commit data to Redis named volume.</div>
+        </div>
+      </section>
+    </div>
+
+    <!-- Optimization Direct Comparison Panel -->
+    <section class="panel">
+      <div class="panel-header">
+        <div>
+          <h2>Architectural Benchmark: Naive Compose vs. Production MeshPulse</h2>
+          <p class="panel-subtitle">Comparing network isolation, storage durability, security posture, and lifecycle healthchecks</p>
+        </div>
+        <span class="badge-saving">DevOps Best Practice Contrast</span>
+      </div>
+
+      <div class="comparison-grid">
+        <!-- Baseline Card -->
+        <div class="comparison-card card-unoptimized">
+          <div class="comp-badge badge-danger">UNOPTIMIZED (BASELINE)</div>
+          <div class="comp-title">docker-compose.unoptimized.yml</div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Network Topology:</span>
+            <span class="comp-val text-danger">Single flat bridge (Zero isolation) ⚠️</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Database Exposure:</span>
+            <span class="comp-val text-danger">Redis exposed to gateway &amp; ingress</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Storage Durability:</span>
+            <span class="comp-val text-danger">Ephemeral (100% data loss on down)</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Security Privileges:</span>
+            <span class="comp-val text-danger">root (UID 0) across all services</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Service Orchestration:</span>
+            <span class="comp-val text-danger">No healthchecks (Race conditions)</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Resource Limits:</span>
+            <span class="comp-val text-danger">Uncapped (Noisy Neighbor hazard)</span>
+          </div>
+        </div>
+
+        <!-- Optimized Card -->
+        <div class="comparison-card card-optimized">
+          <div class="comp-badge badge-success">PRODUCTION (MESHPULSE)</div>
+          <div class="comp-title">docker-compose.yml</div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Network Topology:</span>
+            <span class="comp-val text-success">Dual subnets (frontend-net &amp; backend-net) ✔</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Database Exposure:</span>
+            <span class="comp-val text-success">Isolated on backend-net (Zero-Trust) ✔</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Storage Durability:</span>
+            <span class="comp-val text-success">Named Volume redis_data with AOF ✔</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Security Privileges:</span>
+            <span class="comp-val text-success">USER node (UID 1000) &amp; no-new-privileges ✔</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Service Orchestration:</span>
+            <span class="comp-val text-success">depends_on: condition: service_healthy ✔</span>
+          </div>
+          <div class="comp-stat-row">
+            <span class="comp-label">Resource Limits:</span>
+            <span class="comp-val text-success">Capped (CPU: 0.5, RAM: 128M - 256M) ✔</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Footer -->
+    <footer class="footer">
+      <div>MeshPulse — Multi-Container Application, Network &amp; Storage Architecture — DevOps Lab 4</div>
+      <div class="footer-links">
+        <span>Achindra Sharma (2547105)</span> •
+        <span>4MCA A</span> •
+        <a href="/healthz" target="_blank">Liveness (/healthz)</a> •
+        <a href="/livez" target="_blank">Readiness (/livez)</a> •
+        <a href="/api/mesh-info" target="_blank">Mesh Telemetry API</a> •
+        <a href="/api/network/dns-test" target="_blank">DNS Discovery API</a> •
+        <a href="/api/storage/read" target="_blank">Storage Records API</a>
+      </div>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>
