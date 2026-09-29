@@ -28,12 +28,17 @@
 ## 1. Project Overview
 
 Rather than creating a toy multi-container setup with two unmonitored containers on a flat bridge network, we engineered **MeshPulse**, an enterprise-grade cloud-native distributed microservice platform featuring:
-1. **Four-Tier Service Architecture:** Nginx L7 Edge Gateway, Multi-Stage Node.js Core API, Redis 7.4 State Store, and an Alpine Sentinel Watchdog.
-2. **Zero-Trust Network Segmentation:** Dual isolated bridge networks (`frontend-net` 172.28.1.0/24 and `backend-net` 172.28.2.0/24), physically blocking direct communication between ingress proxies and backend databases.
-3. **Tri-Tier Storage Strategy:** Named Persistent Volumes (`redis_data`), Read-Only Bind Mounts (`nginx.conf:ro`), and In-Memory Tmpfs RAM mounts (`/tmp`).
-4. **Disaster Recovery Proof:** Automated verification proving that terminating and removing the database container results in **zero data loss** via Docker volume persistence.
-5. **Healthcheck-Driven Orchestration:** Eliminating startup race conditions using `condition: service_healthy`.
-6. **Interactive Dark-Mode Dashboard:** Live web portal at `http://localhost:8080` displaying real-time topology, DNS discovery, and storage logs.
+1. **Four Dedicated Custom Dockerfiles:**
+   - [`Dockerfile.api`](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/Dockerfile.api) / [`Dockerfile`](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/Dockerfile): Hardened Node.js 22 runtime running under UID 1000 with multi-stage build.
+   - [`Dockerfile.gateway`](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/Dockerfile.gateway): Custom Nginx 1.27 reverse proxy with healthcheck and baked configuration.
+   - [`Dockerfile.cache`](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/Dockerfile.cache): Hardened Redis 7.4 state store with AOF persistence and memory limits.
+   - [`Dockerfile.watchdog`](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/Dockerfile.watchdog): Alpine 3.21 sentinel with diagnostic tools (`bind-tools`, `netcat`, `curl`).
+2. **Four-Tier Service Architecture:** Nginx L7 Edge Gateway, Multi-Stage Node.js Core API, Redis 7.4 State Store, and an Alpine Sentinel Watchdog.
+3. **Zero-Trust Network Segmentation:** Dual isolated bridge networks (`frontend-net` 172.28.1.0/24 and `backend-net` 172.28.2.0/24), physically blocking direct communication between ingress proxies and backend databases.
+4. **Tri-Tier Storage Strategy:** Named Persistent Volumes (`redis_data`), Read-Only Bind Mounts (`nginx.conf:ro`), and In-Memory Tmpfs RAM mounts (`/tmp`).
+5. **Disaster Recovery Proof:** Automated verification proving that terminating and removing the database container results in **zero data loss** via Docker volume persistence.
+6. **Healthcheck-Driven Orchestration:** Eliminating startup race conditions using `condition: service_healthy`.
+7. **Interactive Dark-Mode Dashboard:** Live web portal at `http://localhost:8080` displaying real-time topology, DNS discovery, and storage logs.
 
 ---
 

@@ -1,0 +1,21 @@
+# =========================================================================
+# PRODUCTION DOCKERFILE FOR MESHPULSE WATCHDOG (ALPINE SENTINEL)
+# MCA Trimester 5 - DevOps Lab 4
+# Author: Achindra Sharma (2547105)
+# =========================================================================
+FROM alpine:3.21
+
+LABEL org.opencontainers.image.title="MeshPulse Sentinel Watchdog" \
+      org.opencontainers.image.description="Autonomous Network & Storage Telemetry Sentinel" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="Achindra Sharma <2547105>" \
+      org.opencontainers.image.licenses="MIT"
+
+# Install network diagnostic tools
+RUN apk add --no-cache netcat-openbsd bind-tools curl
+
+WORKDIR /app
+COPY scripts/watchdog.sh /app/watchdog.sh
+RUN chmod +x /app/watchdog.sh
+
+CMD ["/app/watchdog.sh"]

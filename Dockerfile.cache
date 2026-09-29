@@ -1,0 +1,25 @@
+# =========================================================================
+# PRODUCTION DOCKERFILE FOR MESHPULSE CACHE (REDIS STATE STORE)
+# MCA Trimester 5 - DevOps Lab 4
+# Author: Achindra Sharma (2547105)
+# =========================================================================
+FROM redis:7.4-alpine
+
+LABEL org.opencontainers.image.title="MeshPulse Cache" \
+      org.opencontainers.image.description="Redis In-Memory State Store with AOF Persistence" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="Achindra Sharma <2547105>" \
+      org.opencontainers.image.licenses="MIT"
+
+# Ensure data directory exists with redis permissions
+RUN mkdir -p /data && chown -R redis:redis /data
+
+WORKDIR /data
+VOLUME ["/data"]
+
+EXPOSE 6379
+
+HEALTHCHECK --interval=10s --timeout=3s --retries=3 \
+  CMD redis-cli ping || exit 1
+
+CMD ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]

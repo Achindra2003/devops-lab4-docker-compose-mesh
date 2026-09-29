@@ -12,7 +12,10 @@ services:
   # Storage: Read-Only Bind Mount (./nginx/nginx.conf)
   # -----------------------------------------------------------------------
   gateway:
-    image: nginx:1.27-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.gateway
+    image: meshpulse-gateway:1.0.0
     container_name: mesh-gateway
     restart: unless-stopped
     ports:
@@ -84,7 +87,10 @@ services:
   # Storage: Named Persistent Volume (redis_data:/data with AOF persistence)
   # -----------------------------------------------------------------------
   cache:
-    image: redis:7.4-alpine
+    build:
+      context: .
+      dockerfile: Dockerfile.cache
+    image: meshpulse-cache:1.0.0
     container_name: mesh-cache
     restart: unless-stopped
     command: ["redis-server", "--appendonly", "yes", "--maxmemory", "128mb", "--maxmemory-policy", "allkeys-lru"]
@@ -113,7 +119,10 @@ services:
   # Purpose: Autonomous DNS discovery & health polling sentinel
   # -----------------------------------------------------------------------
   watchdog:
-    image: alpine:3.21
+    build:
+      context: .
+      dockerfile: Dockerfile.watchdog
+    image: meshpulse-watchdog:1.0.0
     container_name: mesh-watchdog
     restart: unless-stopped
     command: >

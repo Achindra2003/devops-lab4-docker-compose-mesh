@@ -1,0 +1,24 @@
+# =========================================================================
+# PRODUCTION DOCKERFILE FOR MESHPULSE GATEWAY (NGINX REVERSE PROXY)
+# MCA Trimester 5 - DevOps Lab 4
+# Author: Achindra Sharma (2547105)
+# =========================================================================
+FROM nginx:1.27-alpine
+
+LABEL org.opencontainers.image.title="MeshPulse Edge Gateway" \
+      org.opencontainers.image.description="Nginx L7 Reverse Proxy & Ingress Gateway" \
+      org.opencontainers.image.version="1.0.0" \
+      org.opencontainers.image.authors="Achindra Sharma <2547105>" \
+      org.opencontainers.image.licenses="MIT"
+
+# Copy custom Nginx configuration
+COPY nginx/nginx.conf /etc/nginx/nginx.conf
+
+# Expose HTTP port 80
+EXPOSE 80
+
+# Healthcheck probe for dependency orchestration
+HEALTHCHECK --interval=15s --timeout=3s --retries=3 \
+  CMD wget -q --spider http://127.0.0.1:80/gateway/healthz || exit 1
+
+CMD ["nginx", "-g", "daemon off;"]

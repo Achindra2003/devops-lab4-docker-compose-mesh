@@ -103,7 +103,7 @@
 </figure>
 
 <h2 class="section">2. Multi-Container Orchestration: Baseline vs. Production Architecture</h2>
-<p>To establish empirical proof of optimization, we created two contrasting Compose configurations: an unoptimized baseline (<code class="inline">docker-compose.unoptimized.yml</code>) representing naive student implementations, and our hardened production stack (<code class="inline">docker-compose.yml</code>) using healthcheck-driven dependency ordering (<code class="inline">condition: service_healthy</code>):</p>
+<p>To establish empirical proof of optimization, we created two contrasting Compose configurations: an unoptimized baseline (<code class="inline">docker-compose.unoptimized.yml</code>) representing naive student implementations, and our hardened production stack (<code class="inline">docker-compose.yml</code>) using healthcheck-driven dependency ordering (<code class="inline">condition: service_healthy</code>). Each service in the production mesh is built from a dedicated custom Dockerfile: <code class="inline">Dockerfile.api</code> (multi-stage Node.js UID 1000 runtime), <code class="inline">Dockerfile.gateway</code> (Nginx reverse proxy), <code class="inline">Dockerfile.cache</code> (hardened Redis with AOF persistence), and <code class="inline">Dockerfile.watchdog</code> (Alpine network telemetry sentinel):</p>
 
 <table>
   <thead>
