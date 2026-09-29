@@ -80,7 +80,7 @@ runCheck('Data Durability & Crash Recovery (Survives Container Destruction)', ()
       recovered = execSync(`docker exec mesh-cache redis-cli GET "${testKey}"`, { encoding: 'utf8' }).trim();
       if (recovered === testVal) break;
     } catch {
-      execSync('timeout /t 1 >nul 2>&1 || sleep 1');
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1000);
     }
   }
 

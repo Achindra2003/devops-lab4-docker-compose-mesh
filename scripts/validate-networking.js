@@ -56,8 +56,17 @@ runCheck('Service Discovery: API -> Cache (backend-net)', () => {
 
 // 4. Validate DNS Resolution from Gateway to API on frontend-net
 runCheck('Service Discovery: Gateway -> API (frontend-net)', () => {
-  const output = execSync('docker exec mesh-gateway nslookup api', { encoding: 'utf8' });
-  if (!output.includes('172.28.1.')) throw new Error(`DNS resolution failed for 'api' on frontend-net`);
+  let output = '';
+  try {
+    output = execSync('docker exec mesh-gateway getent hosts api', { encoding: 'utf8' }).trim();
+  } catch {
+    try {
+      output = execSync('docker exec mesh-gateway sh -c "nslookup api 127.0.0.11 || ping -c 1 -W 2 api"', { encoding: 'utf8' });
+    } catch {
+      output = execSync('docker exec mesh-gateway nslookup api', { encoding: 'utf8' });
+    }
+  }
+  if (!output.includes('172.28.1.')) throw new Error(`DNS resolution failed for 'api' on frontend-net: ${output}`);
   return `'api' successfully resolved by Nginx gateway on frontend-net`;
 });
 
