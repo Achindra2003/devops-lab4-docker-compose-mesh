@@ -138,7 +138,7 @@ docker exec mesh-api whoami
 
 ## 6. Deliverables & Documentation Catalog
 
-- 📄 **[Official PDF Lab Report (2547105_Lab4.pdf)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/2547105_Lab4.pdf)** — Formal 9-page academic report with 10 annotated figures.
+- 📄 **[Official PDF Lab Report (2547105_Lab4.pdf)](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/2547105_Lab4.pdf)** — Formal 7-page academic report with 10 annotated figures.
 - 📝 **[Evaluation Quick Cheat Sheet](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/EVALUATION_CHEAT_SHEET.md)** — 90-second pitch, live demo commands, and viva Q&A.
 - 📚 **[Full Academic Markdown Report](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.md)** — Exhaustive documentation with screenshot instructions.
 - 🌐 **[Printable Academic HTML Report](file:///d:/Downloads/Trimester%205%20-%20DevOps/Lab%204/docs/LAB_4_REPORT.html)** — Printable version for browser export.

@@ -4,42 +4,79 @@
 <meta charset="UTF-8">
 <title>Lab 4 Report — MeshPulse Multi-Container Orchestration, Networking &amp; Storage</title>
 <style>
-  @page { size: A4; margin: 20mm 18mm 20mm 18mm; }
+  @page { size: A4; margin: 22mm 20mm 22mm 20mm; }
+
   * { box-sizing: border-box; }
+
   body {
     font-family: "Times New Roman", Times, Georgia, serif;
-    font-size: 11pt;
-    line-height: 1.35;
+    font-size: 12pt;
+    line-height: 1.38;
     color: #111;
     margin: 0;
   }
-  p { margin: 0 0 9pt 0; text-align: justify; }
-  .title-block { text-align: center; margin-bottom: 20pt; }
-  .title-block h1 { font-size: 19pt; margin: 0 0 5pt 0; font-weight: bold; }
-  .title-block .subtitle { font-size: 13pt; font-weight: bold; margin: 0 0 12pt 0; }
-  .title-block .meta-line { font-size: 11.5pt; margin: 2pt 0; }
+
+  p { margin: 0 0 10pt 0; text-align: justify; }
+
+  .title-block { text-align: center; margin-bottom: 22pt; }
+  .title-block h1 {
+    font-size: 20pt; margin: 0 0 6pt 0; font-weight: bold;
+  }
+  .title-block .subtitle {
+    font-size: 13.5pt; font-weight: bold; margin: 0 0 14pt 0;
+  }
+  .title-block .meta-line { font-size: 12pt; margin: 2pt 0; }
   .title-block .meta-line a { color: #111; text-decoration: underline; }
-  .title-block .class-line { font-size: 11.5pt; margin-top: 6pt; }
-  hr.divider { border: none; border-top: 1px solid #999; margin: 14pt 0; }
-  h2.section { font-size: 13pt; font-weight: bold; margin: 18pt 0 6pt 0; break-after: avoid; }
-  h3.subsection { font-size: 11.5pt; font-weight: bold; margin: 10pt 0 4pt 0; break-after: avoid; }
-  ul, ol { margin: 4pt 0 10pt 0; padding-left: 20pt; }
-  li { text-align: justify; margin-bottom: 4pt; }
-  figure { margin: 12pt 0; text-align: center; break-inside: avoid; }
-  figure img { max-width: 100%; border: 1px solid #bbb; border-radius: 2px; }
-  figcaption { font-style: italic; font-size: 10pt; margin-top: 5pt; color: #222; text-align: center; }
+  .title-block .class-line { font-size: 12pt; margin-top: 8pt; }
+
+  hr.divider { border: none; border-top: 1px solid #999; margin: 16pt 0; }
+
+  h2.section {
+    font-size: 13.5pt; font-weight: bold; margin: 20pt 0 8pt 0;
+    break-after: avoid;
+  }
+  h3.subsection {
+    font-size: 12pt; font-weight: bold; margin: 12pt 0 6pt 0;
+    break-after: avoid;
+  }
+
+  ul, ol { margin: 6pt 0 12pt 0; padding-left: 22pt; }
+  li { text-align: justify; margin-bottom: 5pt; }
+  li strong.lead { font-weight: bold; }
+
+  figure {
+    margin: 12pt 0; text-align: center; break-inside: avoid;
+  }
+  figure img {
+    max-width: 100%; max-height: 250px; width: auto; border: 1px solid #bbb; border-radius: 2px;
+  }
+  figure.dashboard-fig img {
+    max-height: 225px;
+  }
+  figcaption {
+    font-style: italic; font-size: 10.5pt; margin-top: 6pt; color: #222;
+    text-align: center;
+  }
+
   pre.code {
     background: #f6f6f4; border: 1px solid #ddd; border-radius: 2px;
-    font-family: Consolas, "Courier New", monospace; font-size: 9pt;
-    line-height: 1.3; padding: 8pt 10pt; margin: 6pt 0 10pt 0;
+    font-family: Consolas, "Courier New", monospace; font-size: 9.5pt;
+    line-height: 1.35; padding: 9pt 11pt; margin: 8pt 0 12pt 0;
     white-space: pre-wrap; word-wrap: break-word; text-align: left;
     break-inside: avoid;
   }
-  table { width: 100%; border-collapse: collapse; margin: 8pt 0 12pt 0; font-size: 10pt; break-inside: avoid; }
-  th, td { border: 1px solid #999; padding: 4.5pt 6pt; text-align: left; vertical-align: top; }
+
+  table {
+    width: 100%; border-collapse: collapse; margin: 10pt 0 14pt 0;
+    font-size: 10.5pt; break-inside: avoid;
+  }
+  th, td {
+    border: 1px solid #999; padding: 5pt 7pt; text-align: left; vertical-align: top;
+  }
   th { background: #eeeeee; font-weight: bold; text-align: center; }
+
   strong { font-weight: bold; }
-  code.inline { font-family: Consolas, "Courier New", monospace; font-size: 10pt; }
+  code.inline { font-family: Consolas, "Courier New", monospace; font-size: 10.5pt; }
 </style>
 </head>
 <body>
@@ -49,23 +86,24 @@
   <div class="subtitle">Multi-Container Application Orchestration, Network Segmentation &amp; Storage Validation<br>MeshPulse — Cloud-Native Distributed Microservice Architecture</div>
   <div class="meta-line">Achindra Sharma — 2547105 (Individual Submission)</div>
   <div class="meta-line class-line">4MCA A — MCA Trimester 5: DevOps Lab (Lab 4)</div>
-  <div class="meta-line" style="margin-top:6pt;">Repository: <a href="https://github.com/Achindra2003/devops-lab4-docker-compose-mesh">github.com/Achindra2003/devops-lab4-docker-compose-mesh</a></div>
+  <div class="meta-line" style="margin-top:8pt;">Repository: <a href="https://github.com/Achindra2003/devops-lab4-docker-compose-mesh">github.com/Achindra2003/devops-lab4-docker-compose-mesh</a></div>
   <div class="meta-line">Compose Launch: <code class="inline" style="background:#f0f0f0;padding:2px 5px;border-radius:3px;">docker compose up -d</code></div>
-  <div class="meta-line">Ingress Gateway: <code class="inline" style="background:#f0f0f0;padding:2px 5px;border-radius:3px;">http://localhost:8080</code></div>
+  <div class="meta-line">Ingress Gateway: <a href="http://localhost:8080">http://localhost:8080</a></div>
+  <div class="meta-line">CI/CD Status: <a href="https://github.com/Achindra2003/devops-lab4-docker-compose-mesh/actions" style="color:#059669;font-weight:bold;">Compose CI &amp; Validation (All Checks Passed)</a></div>
 </div>
 
-<h2 class="section">1. Project Background &amp; Problem Context</h2>
+<h2 class="section">1. Project Description &amp; System Context</h2>
 <p>Modern cloud-native platforms rely on multi-container orchestration where independent microservices coordinate across network and storage boundaries. The prompt for this laboratory is to <strong>develop and deploy a multi-container application using Docker Compose or Podman, and validate networking and storage</strong>.</p>
 <p>Naive Compose setups suffer from severe architectural anti-patterns: placing all containers on a single flat bridge network (allowing compromised web proxies to breach internal databases), omitting named volumes (causing total data loss on container recreation), lacking healthchecks (introducing boot-time race conditions), and running all processes as root.</p>
-<p>To eliminate these hazards, we engineered <strong>MeshPulse</strong>: a distributed microservice stack composed of an Nginx L7 Edge Gateway, a multi-stage Node.js Core API, a persistent Redis Cache, and an autonomous Sentinel Watchdog, governed by dual zero-trust subnets and a tri-tier storage hierarchy.</p>
+<p>To eliminate these hazards, we engineered <strong>MeshPulse</strong>: a four-tier distributed microservice platform composed of an Nginx L7 Edge Gateway, a multi-stage Node.js Core API, a persistent Redis Cache, and an autonomous Sentinel Watchdog, governed by dual zero-trust subnets and a tri-tier storage hierarchy.</p>
 
-<figure>
+<figure class="dashboard-fig">
   <img src="screenshots/10-meshpulse-live-dashboard.png" alt="MeshPulse Live Browser Dashboard">
   <figcaption>Figure 1 — MeshPulse interactive web dashboard running via Nginx edge reverse proxy on port 8080, displaying runtime topology, DNS discovery, and storage logs.</figcaption>
 </figure>
 
-<h2 class="section">2. Multi-Container Orchestration Architecture</h2>
-<p>Our stack is defined in <code class="inline">docker-compose.yml</code> using healthcheck-driven dependency ordering (<code class="inline">condition: service_healthy</code>) to ensure deterministic, crash-free startup convergence:</p>
+<h2 class="section">2. Multi-Container Orchestration: Baseline vs. Production Architecture</h2>
+<p>To establish empirical proof of optimization, we created two contrasting Compose configurations: an unoptimized baseline (<code class="inline">docker-compose.unoptimized.yml</code>) representing naive student implementations, and our hardened production stack (<code class="inline">docker-compose.yml</code>) using healthcheck-driven dependency ordering (<code class="inline">condition: service_healthy</code>):</p>
 
 <table>
   <thead>
@@ -146,9 +184,17 @@
 <h2 class="section">3. Network Segmentation &amp; Zero-Trust Validation</h2>
 <p>We designed two isolated user-defined bridge networks to enforce least-privilege traffic flow:</p>
 <ul>
-  <li><strong class="lead">frontend-net (172.28.1.0/24)</strong>: Connects Edge Gateway and Core API for public HTTP ingress.</li>
-  <li><strong class="lead">backend-net (172.28.2.0/24)</strong>: Connects Core API, Redis Cache, and Sentinel Watchdog for private data operations.</li>
+  <li><strong class="lead">frontend-net (172.28.1.0/24)</strong> — connects Edge Gateway and Core API for public HTTP ingress. Direct routing to Redis is blocked at the kernel packet filter level.</li>
+  <li><strong class="lead">backend-net (172.28.2.0/24)</strong> — connects Core API, Redis Cache, and Sentinel Watchdog for internal state operations. Containers resolve each other dynamically via Docker internal DNS (<code class="inline">127.0.0.11</code>).</li>
 </ul>
+
+<p>We verified Zero-Trust network isolation by probing the database port directly from the edge gateway container:</p>
+<pre class="code">$ docker exec mesh-gateway nc -z -w 2 cache 6379
+nc: bad address 'cache'
+$ docker exec mesh-gateway ping -c 1 -W 2 172.28.2.2
+PING 172.28.2.2 (172.28.2.2): 56 data bytes
+--- 172.28.2.2 ping statistics ---
+1 packets transmitted, 0 packets received, 100% packet loss</pre>
 
 <figure>
   <img src="screenshots/04-network-inspection.png" alt="Network Subnet Inspection">
@@ -166,7 +212,8 @@
 </figure>
 
 <h2 class="section">4. Multi-Tier Storage Architecture &amp; Persistence Validation</h2>
-<p>We implemented a Tri-Tier storage hierarchy validating persistence and security boundaries:</p>
+<p>We implemented a Tri-Tier storage hierarchy validating persistence, immutability, and in-memory isolation:</p>
+
 <table>
   <thead>
     <tr>
@@ -198,6 +245,13 @@
   </tbody>
 </table>
 
+<p>We verified bind mount write-protection and tmpfs in-memory allocation directly via container shell execution:</p>
+<pre class="code">$ docker exec mesh-gateway touch /etc/nginx/nginx.conf
+touch: /etc/nginx/nginx.conf: Read-only file system
+$ docker exec mesh-api df -T /tmp
+Filesystem           Type       1K-blocks      Used Available Use% Mounted on
+tmpfs                tmpfs          65536         4     65532   0% /tmp</pre>
+
 <figure>
   <img src="screenshots/07-storage-volume-inspect.png" alt="Storage Inspection">
   <figcaption>Figure 8 — Docker volume metadata and verifying that writes to read-only bind mounts return 'Read-only file system'.</figcaption>
@@ -213,15 +267,16 @@
   <figcaption>Figure 10 — Terminal output of automated validation suites reporting 100% passing checks (10/10 Passed).</figcaption>
 </figure>
 
-<h2 class="section">5. The Seven Self-Learning Initiatives</h2>
+<h2 class="section">5. Beyond the Baseline: Self-Learning Initiatives</h2>
+<p>We implemented seven production container orchestration engineering initiatives:</p>
 <ol>
-  <li><strong>Multi-Tier Zero-Trust Network Segmentation:</strong> Dual bridge networks preventing direct database access from edge ingress.</li>
-  <li><strong>Tri-Tier Storage Strategy:</strong> Orchestrating Named Volumes, Read-Only Bind Mounts, and Tmpfs RAM mounts simultaneously.</li>
-  <li><strong>Automated Disaster Recovery Testing:</strong> Scripted verification proving zero data loss across container lifecycle destruction.</li>
-  <li><strong>DNS Service Discovery Architecture:</strong> Fully automated service discovery via Docker embedded DNS without hardcoded IPs.</li>
-  <li><strong>Healthcheck-Driven Dependency Orchestration:</strong> Eliminating race conditions using <code class="inline">condition: service_healthy</code>.</li>
-  <li><strong>Least-Privilege Non-Root Hardening:</strong> Microservice execution as UID 1000 with <code class="inline">no-new-privileges:true</code>.</li>
-  <li><strong>Automated CI/CD Validation Pipeline:</strong> GitHub Actions pipeline verifying unit tests, compose startup, network isolation, and storage recovery.</li>
+  <li><strong class="lead">Multi-Tier Zero-Trust Network Segmentation</strong> — dual bridge subnets preventing direct database access from edge ingress.</li>
+  <li><strong class="lead">Tri-Tier Storage Strategy</strong> — orchestrating Named Volumes, Read-Only Bind Mounts, and Tmpfs RAM mounts simultaneously.</li>
+  <li><strong class="lead">Automated Disaster Recovery Testing</strong> — scripted verification proving zero data loss across container lifecycle destruction.</li>
+  <li><strong class="lead">DNS Service Discovery Architecture</strong> — fully automated service discovery via Docker embedded DNS (<code class="inline">127.0.0.11</code>) without hardcoded IPs.</li>
+  <li><strong class="lead">Healthcheck-Driven Dependency Orchestration</strong> — eliminating boot-time race conditions using <code class="inline">condition: service_healthy</code>.</li>
+  <li><strong class="lead">Least-Privilege Non-Root Hardening</strong> — microservice execution as UID 1000 with <code class="inline">no-new-privileges:true</code>.</li>
+  <li><strong class="lead">Automated CI/CD Validation Pipeline</strong> — GitHub Actions pipeline verifying unit tests, compose startup, network isolation, and storage recovery.</li>
 </ol>
 
 <h2 class="section">6. Key Learnings &amp; Engineering Reflections</h2>
